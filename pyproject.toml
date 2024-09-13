@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools", "wheel", "pandas"]
+build-backend = "setuptools.build_meta"
+
+[tool.black]
+line-length = 88
+target-version = ['py38']
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "-ra -q"
+testpaths = ["tests"]
+
+[tool.flake8]
+max-line-length = 88
+exclude = ["venv/"]
