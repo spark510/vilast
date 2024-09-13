@@ -1,0 +1,54 @@
+{% set name = "vilast" %}
+{% set version = "0.0.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/pytest-{{ version }}.tar.gz
+  sha256: 70b98107bd648308a7952b06e6ca9a50bc660be218d53c257cc1fc94fda10181
+
+build:
+  skip: true  # [py<38]
+  entry_points:
+    - py.test = pytest:console_main
+    - pytest = pytest:console_main
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+
+requirements:
+  host:
+    - python >=3.8
+    - setuptools >=61
+    - setuptools-scm >=6.2.3
+    - pip
+  run:
+    - python >=3.8
+    - colorama  # [win]
+    - exceptiongroup >=1.0.0rc8  # [py<311]
+    - iniconfig
+    - packaging
+    - pluggy <2,>=1.5
+    - tomli >=1  # [py<311]
+
+test:
+  imports:
+    - py
+    - pytest
+  commands:
+    - pip check
+    - py.test --help
+    - vilast --help
+  requires:
+    - pip
+
+about:
+  summary: 'vilast: simple powerful testing with Python'
+  dev_url: https://github.com/spark510/vilast
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - AddYourGitHubIdHere
