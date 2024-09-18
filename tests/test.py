@@ -1,1 +1,2 @@
-print(1)
+def test_dummy():
+    pass
