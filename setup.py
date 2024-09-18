@@ -8,7 +8,9 @@ setup(
     description="A taxonomy-based Python package",
     author="Your Name",
     author_email="your.email@example.com",
-    install_requires=[],  # Add required dependencies here
+    install_requires=[
+        'lxml',  # Add lxml as a required dependency
+    ],
     entry_points={
         'console_scripts': [
             'vilast=vilast.lpb_virus:main',  # Replace this with your entry point
