@@ -6,4 +6,4 @@ dependencies:
   - conda
   - pip
   - setuptools
-  - any-other-package-you-need
+#  - any-other-package-you-need
