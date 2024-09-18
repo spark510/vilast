@@ -150,7 +150,7 @@ class TaxonUtils:
             tax_rank = []
         tax_rank.append(taxon.rank)
         for child in taxon.children:
-            collect_all_levels(child, tax_rank)
+            TaxonUtils.collect_all_levels(child, tax_rank)
         return tax_rank
     
     @staticmethod
