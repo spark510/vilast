@@ -10,6 +10,8 @@ setup(
     author_email="your.email@example.com",
     install_requires=[
         'lxml',  # Add lxml as a required dependency
+        'pandas',
+        'sqlite3'
     ],
     entry_points={
         'console_scripts': [
