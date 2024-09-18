@@ -145,7 +145,7 @@ class TaxonUtils:
         return max(count, key=count.get) if count else None
 
     @staticmethod
-    def collect_all_levels(taxon, taxids=None):
+    def collect_all_levels(taxon, tax_rank=None):
         if tax_rank is None:
             tax_rank = []
         tax_rank.append(taxon.rank)
