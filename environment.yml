@@ -1,9 +1,12 @@
 name: vilast
 channels:
   - defaults
+  - bioconda
+
 dependencies:
   - python=3.8
   - conda
   - pip
   - setuptools
+  - pytaxonkit
 #  - any-other-package-you-need

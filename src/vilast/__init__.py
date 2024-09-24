@@ -5,6 +5,8 @@ __version__ = "0.1.0"
 __author__ = "Your Name"
 
 # Importing modules for easier access
-# from vilast.taxonomy import Taxon
+from blast_handler import BlastProcessor
+from blast_handler import BlastParser
+import pytaxonkit as ptk
 
 # You can also define any package-level constants here if needed

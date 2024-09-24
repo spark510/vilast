@@ -27,6 +27,7 @@ requirements:
     - setuptools >=61
     - setuptools-scm >=6.2.3
     - pip
+    - pytaxonkit>=0.5.0
   run:
     - python >=3.8
     - colorama  # [win]
