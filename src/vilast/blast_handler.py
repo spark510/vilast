@@ -87,8 +87,9 @@ class BlastProcessor:
 
 class BlastParser:
     EXCLUDE_PATTERN =  re.compile(r'MH590414\.[0-9]|MH590388\.[0-9]|MG934417\.[0-9]|OR951374\.[0-9]')
+    EXCLUDE_PATTERN2 =  re.compile(r'Uncultured human fecal virus')
 
-    def __init__(self, bout_dir, acc2taxid_loader, taxon_structure_pickle='taxon_structure.pkl',best_hit_only = False,qcov=75,pident=90):
+    def __init__(self, bout_dir, acc2taxid_loader, taxon_structure_pickle='taxon_structure.pkl',best_hit_only = False,qcov=75,pident=90, intersect = True):
         self.bout_dir = bout_dir
         self.acc2taxid_loader = acc2taxid_loader
         self.taxon_structure_pickle = taxon_structure_pickle
@@ -97,6 +98,7 @@ class BlastParser:
         self.best_hit_only = best_hit_only
         self.qcov = qcov
         self.pident = pident
+        self.intersect = intersect
 
 
     def initialize_taxon_utils(self):
@@ -124,7 +126,7 @@ class BlastParser:
         return self.acc2taxid_loader.load()
 
     def should_skip_row(self, row, qcov, pident):
-        return float(row[19]) < qcov or float(row[2]) < pident or re.search(self.EXCLUDE_PATTERN, row[1]) is not None
+        return float(row[19]) < qcov or float(row[2]) < pident or re.search(self.EXCLUDE_PATTERN, row[1]) is not None or re.search(self.EXCLUDE_PATTERN2, row[18]) is not None
 
     def get_match_info(self, row, acc2taxid):
         match_info = {
@@ -183,15 +185,22 @@ class BlastParser:
             for_hits_subjid = {hit['sseqid'] for hit in for_hits}
             rev_hits_subjid = {hit['sseqid'] for hit in rev_hits}
             inter_sseqids = for_hits_subjid.intersection(rev_hits_subjid)
-            if inter_sseqids:
-                common_hits = [hit for hit in for_hits if hit['sseqid'] in inter_sseqids]
-                categories[read_uid] = {'hits': common_hits, 'mtype': 2}
+            if self.intersect:
+            # If intersection=True, only add entries with intersecting sseqid values
+                if inter_sseqids:
+                    common_hits = [hit for hit in for_hits if hit['sseqid'] in inter_sseqids]
+                    categories[read_uid] = {'hits': common_hits, 'mtype': 2}
             else:
-                if len(for_hits) > 0 and len(rev_hits) > 0:  
-                    categories[for_read] = {'hits': for_hits, 'mtype': 1}
-                    categories[rev_read] = {'hits': rev_hits, 'mtype': 1}
+                # Original behavior: handle both intersection and non-intersection cases
+                if inter_sseqids:
+                    common_hits = [hit for hit in for_hits if hit['sseqid'] in inter_sseqids]
+                    categories[read_uid] = {'hits': common_hits, 'mtype': 2}
                 else:
-                    categories[read_uid] = {'hits': for_hits+rev_hits, 'mtype': 1} 
+                    if len(for_hits) > 0 and len(rev_hits) > 0:
+                        categories[for_read] = {'hits': for_hits, 'mtype': 1}
+                        categories[rev_read] = {'hits': rev_hits, 'mtype': 1}
+                    else:
+                        categories[read_uid] = {'hits': for_hits + rev_hits, 'mtype': 1}
         return categories
     
     def append_lineage(self, tutils, hits_list, level='species'):

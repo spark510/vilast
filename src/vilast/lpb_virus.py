@@ -51,7 +51,8 @@ def main():
     parser.add_argument("-m","--midentity", type=float, default=75, required=False, help="cutoff for valid hit identity")
     parser.add_argument("-c","--mcoverage", type=float, default=90, required=False, help="cutoff for valid hit coverage")
     parser.add_argument("-s","--steps", type=str, required=False, default='1-2', help="Steps to execute. Use format '1-2' to run steps 1 to 2, or '1,2' to run steps 1 and 2.")
-    
+    parser.add_argument("-p","--paired_match_only", type=bool, default=True, required=False, help="paired_match_only")
+
     args = parser.parse_args()
 
     steps = []
@@ -79,7 +80,8 @@ def main():
         print(0)
         qcoverage = args.midentity
         pidentity = args.mcoverage
-  
+        pm_only = args.paired_match_only
+
         acc2taxid_loader = Acc2TaxidLoader(acc2taxid_file,vacc2taxid_file,vacc2taxid_pickle)  # Assuming this class is implemented correctly
         blast_parser = BlastParser(out_dir, acc2taxid_loader, taxonkit_pickle,qcov=qcoverage,pident=pidentity)
         blast_parser.process_all_files(findex=findex, rindex=rindex, max_workers=n_worker)
@@ -116,7 +118,7 @@ def main():
         qcoverage = args.midentity
         pidentity = args.mcoverage
         acc2taxid_loader = Acc2TaxidLoader(acc2taxid_file,vacc2taxid_file,vacc2taxid_pickle)  # Assuming this class is implemented correctly
-        blast_parser = BlastParser(out_dir, acc2taxid_loader, taxonkit_pickle,qcov=qcoverage,pident=pidentity)
+        blast_parser = BlastParser(out_dir, acc2taxid_loader, taxonkit_pickle,qcov=qcoverage,pident=pidentity,intersect=pm_only)
         print(out_dir)
         blast_parser.process_all_files(findex=findex, rindex=rindex, max_workers=n_worker)
 
@@ -124,7 +126,7 @@ def main():
         db_name = "taxonomy"
         processor = TaxonomyProcessor(sqlite3_file, db_name)
         full_df = processor.process_dataframe(blast_parser.result_dict)
-        file_suffix = datetime.today().strftime("%Y%m%d")+"_"+str(qcoverage)+"_"+str(pidentity)
+        file_suffix = datetime.today().strftime("%Y%m%d")+"_"+str(qcoverage)+"_"+str(pidentity)+"_intersect_"+str(pm_only)
         processor.process_and_save_aggregations(full_df, out_dir, file_suffix)
 
 if __name__ == "__main__":
